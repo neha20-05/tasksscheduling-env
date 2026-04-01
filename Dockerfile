@@ -2,8 +2,8 @@ FROM python:3.10
 
 WORKDIR /app
 
-COPY . /app
+COPY . .
 
-RUN pip install --no-cache-dir fastapi uvicorn pydantic
+RUN pip install -r requirements.txt
 
-CMD ["python", "grader.py"]
+CMD ["uvicorn", "inference:app", "--host", "0.0.0.0", "--port", "7860"]
