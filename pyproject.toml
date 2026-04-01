@@ -5,8 +5,9 @@ description = "Task Scheduling OpenEnv Project"
 authors = [{name = "Neha"}]
 dependencies = [
     "fastapi",
-    "uvicorn"
+    "uvicorn",
+    "openenv>=0.2.0"
 ]
 
 [tool.openenv]
-entrypoint = "inference:app"
+entrypoint = "server.app:app"
