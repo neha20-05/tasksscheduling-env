@@ -1,13 +1,10 @@
 [project]
-name = "taskscheduling-env"
+name = "task-env"
 version = "0.1.0"
-description = "Task Scheduling OpenEnv Project"
-authors = [{name = "Neha"}]
+description = "Task scheduling environment"
 dependencies = [
     "fastapi",
     "uvicorn",
+    "pydantic",
     "openenv"
 ]
-
-[tool.openenv]
-entrypoint = "server.app:app"
