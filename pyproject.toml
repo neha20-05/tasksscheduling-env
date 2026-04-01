@@ -1,0 +1,12 @@
+[project]
+name = "taskscheduling-env"
+version = "0.1.0"
+description = "Task Scheduling OpenEnv Project"
+authors = [{name = "Neha"}]
+dependencies = [
+    "fastapi",
+    "uvicorn"
+]
+
+[tool.openenv]
+entrypoint = "inference:app"
