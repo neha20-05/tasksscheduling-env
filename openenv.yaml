@@ -1,10 +1,4 @@
-name: task-env
-version: 1.0
+name: task-scheduling-env
+description: Simple task scheduling environment
 
-env:
-  entry_point: env:TaskEnv
-
-tasks:
-  - name: easy
-  - name: medium
-  - name: hard
+entry_point: inference.py
