@@ -1,10 +1,11 @@
 [project]
 name = "task-env"
 version = "0.1.0"
-description = "Task scheduling environment"
 dependencies = [
     "fastapi",
     "uvicorn",
-    "pydantic",
-    "openenv"
+    "openenv==0.1.13"
 ]
+
+[project.scripts]
+server = "server.app:app"
