@@ -1,23 +1,20 @@
 from fastapi import FastAPI
-from env import TaskEnv
+from pydantic import BaseModel
+import inference
 
 app = FastAPI()
-env = TaskEnv()
+
+class RequestData(BaseModel):
+    text: str
 
 @app.get("/")
-def home():
-    return {"message": "API is working"}
+def root():
+    return {"message": "Server running "}
 
-@app.post("/reset")
-def reset(level: str = "easy"):
-    state = env.reset(level)
-    return {"state": state}
+@app.post("/predict")
+def predict(data: RequestData):
+    return {"result": inference.predict(data.text)}
 
-@app.post("/step")
-def step(action: int):
-    state, reward, done, _ = env.step(action)
-    return {
-        "state": state,
-        "reward": reward,
-        "done": done
-    }
+# ADD THIS MAIN FUNCTION
+def main():
+    return app
