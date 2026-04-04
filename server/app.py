@@ -1,17 +1,22 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
+import gradio as gr
 import inference
 
 app = FastAPI()
 
-class InputData(BaseModel):
-    text: str
+# Function for Gradio
+def predict_ui(text):
+    result = inference.predict(text)
+    return result
 
-@app.get("/")
-def home():
-    return {"message": "API is running successfully 🚀"}
+# Gradio Interface
+demo = gr.Interface(
+    fn=predict_ui,
+    inputs=gr.Textbox(label="Enter level (easy / medium / hard)"),
+    outputs=gr.JSON(label="Result"),
+    title="Task Scheduling AI",
+    description="Type easy, medium, or hard to test the model"
+)
 
-@app.post("/predict")
-def predict(data: InputData):
-    result = inference.predict(data.text)
-    return {"result": result}
+# Mount Gradio to FastAPI
+app = gr.mount_gradio_app(app, demo, path="/")
