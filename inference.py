@@ -1,14 +1,57 @@
 from env import TaskEnv
+import random
 
-env = TaskEnv()
+# reproducibility
+random.seed(42)
 
-def reset_env():
-    return env.reset()
+def run_episode(level="easy"):
+    env = TaskEnv()
+    state = env.reset(level)
 
-def step_env(action: int):
-    state, reward, done = env.step(action)
+    total_reward = 0
+    done = False
+
+    while not done:
+        available_tasks = [i for i, t in enumerate(state) if not t["done"]]
+
+        if available_tasks:
+            action = max(available_tasks, key=lambda i: state[i]["priority"])
+        else:
+            action = random.randint(0, len(state) - 1)
+
+        state, reward, done, info = env.step(action)
+        total_reward += reward
+
+    return total_reward
+
+
+def normalize_score(score):
+    return max(0.0, min(1.0, (score + 15) / 40))
+
+
+def main():
+    levels = ["easy", "medium", "hard"]
+
+    print("Evaluation Scores:")
+    for level in levels:
+        score = run_episode(level)
+        normalized = normalize_score(score)
+        print(f"{level}: {normalized:.2f}")
+
+def predict(text: str):
+    # map text to level
+    level = text.lower()
+
+    if level not in ["easy", "medium", "hard"]:
+        level = "easy"
+
+    score = run_episode(level)
+    normalized = normalize_score(score)
+
     return {
-        "state": state,
-        "reward": reward,
-        "done": done
-    }
+        "level": level,
+        "score": score,
+        "normalized_score": round(normalized, 2)
+    } 
+if __name__ == "__main__":
+    main()
