@@ -5,12 +5,11 @@ import inference
 
 app = FastAPI()
 
-# create env
 env = TaskEnv()
 current_state = None
 
 # ---------------------------
-# OpenEnv REQUIRED ENDPOINTS
+# OpenEnv endpoints
 # ---------------------------
 
 @app.post("/reset")
@@ -39,7 +38,7 @@ def get_state():
 
 
 # ---------------------------
-# Gradio UI (your existing)
+# Gradio UI
 # ---------------------------
 
 def predict_ui(text):
@@ -51,7 +50,21 @@ demo = gr.Interface(
     inputs=gr.Textbox(label="Enter level (easy / medium / hard)"),
     outputs=gr.JSON(label="Result"),
     title="Task Scheduling AI",
-    description="Type easy, medium, or hard to test the model"
+    description="Type easy, medium, or hard"
 )
 
 app = gr.mount_gradio_app(app, demo, path="/")
+
+
+# ---------------------------
+# ✅ REQUIRED MAIN FUNCTION
+# ---------------------------
+
+def main():
+    import uvicorn
+    uvicorn.run("server.app:app", host="0.0.0.0", port=7860)
+
+
+# VERY IMPORTANT
+if __name__ == "__main__":
+    main()
