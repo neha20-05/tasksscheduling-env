@@ -1,6 +1,11 @@
+import sys
+import os
+
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+
 from fastapi import FastAPI
 import gradio as gr
-from env import TaskEnv
+from server.env import TaskEnv
 import inference
 
 app = FastAPI()
