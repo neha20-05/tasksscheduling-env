@@ -27,7 +27,8 @@ def predict(text: str):
     return inference.predict(text)
 
 def main():
-    return app
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=7860)
 
-if __name__=="__main__":
+if _name_ == "_main_":
     main()
