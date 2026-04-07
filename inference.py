@@ -1,57 +1,44 @@
-import os
-from openai import OpenAI
-from server.env import TaskEnv
+from env import TaskEnv
+import random
 
-# -------------------------
-# REQUIRED ENV VARIABLES
-# -------------------------
-API_BASE_URL = os.getenv("API_BASE_URL", "https://api.openai.com/v1")
-MODEL_NAME = os.getenv("MODEL_NAME", "gpt-4o-mini")
-HF_TOKEN = os.getenv("HF_TOKEN")
+random.seed(42)
 
-client = OpenAI(
-    base_url=API_BASE_URL,
-    api_key=HF_TOKEN
-)
-
-# -------------------------
-# MAIN PREDICT FUNCTION
-# -------------------------
-def predict(level="easy"):
+def run_episode(level="easy"):
     env = TaskEnv()
-
     state = env.reset(level)
 
-    print(f"[START] task=task-scheduling env=custom model={MODEL_NAME}")
-
+    total_reward = 0
     done = False
-    step = 0
-    rewards = []
 
-    while not done and step < 10:
-        step += 1
+    while not done:
+        available_tasks = [i for i, t in enumerate(state) if not t["done"]]
 
-        # simple action logic
-        action = 0
+        if available_tasks:
+            action = max(available_tasks, key=lambda i: state[i]["priority"])
+        else:
+            action = random.randint(0, len(state) - 1)
 
         state, reward, done, info = env.step(action)
-        rewards.append(reward)
+        total_reward += reward
 
-        print(f"[STEP] step={step} action={action} reward={reward} done={done} error=null")
+    return total_reward
 
-    success = done
-    score = sum(rewards)
 
-    print(f"[END] success={success} steps={step} score={score} rewards={rewards}")
+def normalize_score(score):
+    return max(0.0, min(1.0, (score + 15) / 40))
+
+
+def predict(text: str):
+    level = text.lower()
+
+    if level not in ["easy", "medium", "hard"]:
+        level = "easy"
+
+    score = run_episode(level)
+    normalized = normalize_score(score)
 
     return {
-        "success": success,
-        "score": score
+        "level": level,
+        "score": score,
+        "normalized_score": round(normalized, 2)
     }
-
-def main():
-    predict("easy")
-
-
-if __name__ == "__main__":
-    main()
