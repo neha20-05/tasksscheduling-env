@@ -25,3 +25,9 @@ def step():
 @app.get("/predict")
 def predict(text: str):
     return inference.predict(text)
+
+def main():
+    return app
+
+if __name__=="__main__":
+    main()
