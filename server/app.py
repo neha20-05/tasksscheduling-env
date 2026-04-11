@@ -35,9 +35,6 @@ def get_state():
 def main():
     pass
 
-async def _asgi_main(scope, receive, send):
-    await app(scope, receive, send)
-
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=7860)
