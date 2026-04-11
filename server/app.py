@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from env import TaskEnv
 
 app = FastAPI()
@@ -30,9 +32,5 @@ def step(action: Action):
 def get_state():
     return {"state": env.state()}
 
-def main():
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=7860)
-
-if __name__ == "__main__":
-    main()
+# main must be the ASGI app for the validator
+main = app
