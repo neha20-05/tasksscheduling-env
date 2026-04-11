@@ -32,5 +32,11 @@ def step(action: Action):
 def get_state():
     return {"state": env.state()}
 
-# main must be the ASGI app for the validator
+def main():
+    return app
+
 main = app
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=7860)
