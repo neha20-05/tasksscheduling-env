@@ -32,7 +32,10 @@ def step(action: Action):
 def get_state():
     return {"state": env.state()}
 
-async def main(scope, receive, send):
+def main():
+    pass
+
+async def _asgi_main(scope, receive, send):
     await app(scope, receive, send)
 
 if __name__ == "__main__":
