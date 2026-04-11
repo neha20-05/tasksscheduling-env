@@ -1,34 +1,22 @@
 from fastapi import FastAPI
-import inference
 
 app = FastAPI()
 
 
 @app.get("/")
 def root():
-    return {"message": "API running"}
+    return {"message": "Server is running properly"}
 
 
-# ✅ REQUIRED: RESET ENDPOINT
-@app.post("/reset")
-def reset():
-    return {"status": "reset done"}
+@app.get("/health")
+def health():
+    return {"status": "ok"}
 
-
-# ✅ REQUIRED: STEP ENDPOINT
-@app.post("/step")
-def step():
-    return {"status": "step done"}
-
-
-# existing predict
-@app.get("/predict")
-def predict(text: str):
-    return inference.predict(text)
 
 def main():
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=7860)
+    uvicorn.run("server.app:app", host="0.0.0.0", port=7860)
 
-if _name_ == "_main_":
+
+if __name__ == "__main__":
     main()
