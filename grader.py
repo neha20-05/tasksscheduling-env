@@ -99,7 +99,9 @@ def evaluate():
         else:
             score = grade_hard(final_state)
 
-        results[level] = round(score, 2)
+        # Must be strictly between 0 and 1 (not 0.0 or 1.0)
+        score = max(0.01, min(0.99, round(score, 2)))
+        results[level] = score
 
     return results
 
