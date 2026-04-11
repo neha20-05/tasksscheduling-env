@@ -1,4 +1,4 @@
 name: task-scheduling-env
 description: Simple task scheduling environment
 
-entry_point: server.app:app
+entry_point: server.app:main
