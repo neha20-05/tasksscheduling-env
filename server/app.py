@@ -1,62 +1,106 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
-import sys, os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from env import TaskEnv
+import random
 
-app = FastAPI()
-env = TaskEnv()
+# reproducibility
+random.seed(42)
 
-class Action(BaseModel):
-    action: int
 
-@app.get("/")
-def root():
-    return {"message": "Server is running"}
+# -----------------------------
+# BASELINE AGENT POLICY
+# -----------------------------
+def choose_action(state):
+    # choose highest priority unfinished task
+    available_tasks = [i for i, t in enumerate(state) if not t["done"]]
 
-@app.get("/health")
-def health():
-    return {"status": "ok"}
-
-@app.post("/reset")
-def reset(level: str = "easy"):
-    state = env.reset(level)
-    return {"state": state}
-
-@app.post("/step")
-def step(action: Action):
-    state, reward, done, _ = env.step(action.action)
-    return {"state": state, "reward": reward, "done": done}
-
-@app.get("/state")
-def get_state():
-    return {"state": env.state()}
-    
-@app.post("/grade")
-def grade(level: str = "easy"):
-    from grader import run_episode, grade_easy, grade_medium, grade_hard
-    state = run_episode(level)
-    if level == "easy":
-        score = grade_easy(state)
-    elif level == "medium":
-        score = grade_medium(state)
+    if available_tasks:
+        return max(available_tasks, key=lambda i: state[i]["priority"])
     else:
-        score = grade_hard(state)
-    score = max(0.01, min(0.99, round(score, 2)))
-    return {"score": score, "level": level}
+        return 0
 
-@app.get("/tasks")
-def get_tasks():
-    return {
-        "tasks": [
-            {"id": "easy", "description": "Complete all tasks in easy mode"},
-            {"id": "medium", "description": "Complete tasks with priority weighting"},
-            {"id": "hard", "description": "Complete tasks respecting deadlines"}
-        ]
-    }
-def main():
-    pass
 
+# -----------------------------
+# RUN ONE EPISODE
+# -----------------------------
+def run_episode(level):
+    env = TaskEnv()
+    state = env.reset(level)
+
+    done = False
+
+    while not done:
+        action = choose_action(state)
+        state, reward, done, _ = env.step(action)
+
+    return state
+
+
+# -----------------------------
+# GRADERS
+# -----------------------------
+def grade_easy(state):
+    done_tasks = sum(t["done"] for t in state)
+    score = done_tasks / len(state)
+
+    # force into (0,1)
+    return max(0.01, min(0.99, score))
+
+
+def grade_medium(state):
+    score = 0
+    total = 0
+
+    for t in state:
+        weight = t["priority"]
+        total += weight
+
+        if t["done"]:
+            score += weight
+
+    final = score / total if total > 0 else 0
+    return max(0.01, min(0.99, final))
+
+
+def grade_hard(state):
+    score = 0
+    total = 0
+
+    for t in state:
+        weight = t["priority"]
+        total += weight
+
+        # reward if done and deadline still valid
+        if t["done"] and t["deadline"] >= 0:
+            score += weight
+
+    final = score / total if total > 0 else 0
+    return max(0.01, min(0.99, final))
+
+
+# -----------------------------
+# MAIN EVALUATION
+# -----------------------------
+def evaluate():
+    results = {}
+
+    for level in ["easy", "medium", "hard"]:
+        final_state = run_episode(level)
+
+        if level == "easy":
+            score = grade_easy(final_state)
+        elif level == "medium":
+            score = grade_medium(final_state)
+        else:
+            score = grade_hard(final_state)
+
+        # round for clean output
+        results[level] = round(score, 2)
+
+    return results
+
+
+# -----------------------------
+# RUN (IMPORTANT FORMAT)
+# -----------------------------
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=7860)
+    scores = evaluate()
+    print(scores)
