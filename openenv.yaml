@@ -7,22 +7,22 @@ tasks:
     description: Complete all tasks in easy mode
     grader:
       function: grader.grade_easy
-      min_score: 0.0
-      max_score: 1.0
+      min_score: 0.1
+      max_score: 0.9
     level: easy
 
   - id: medium
     description: Complete tasks with priority weighting
     grader:
       function: grader.grade_medium
-      min_score: 0.0
-      max_score: 1.0
+      min_score: 0.1
+      max_score: 0.9
     level: medium
 
   - id: hard
     description: Complete tasks respecting deadlines
     grader:
       function: grader.grade_hard
-      min_score: 0.0
-      max_score: 1.0
+      min_score: 0.1
+      max_score: 0.9
     level: hard
