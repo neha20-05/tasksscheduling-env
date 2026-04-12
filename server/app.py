@@ -31,7 +31,29 @@ def step(action: Action):
 @app.get("/state")
 def get_state():
     return {"state": env.state()}
+    
+@app.post("/grade")
+def grade(level: str = "easy"):
+    from grader import run_episode, grade_easy, grade_medium, grade_hard
+    state = run_episode(level)
+    if level == "easy":
+        score = grade_easy(state)
+    elif level == "medium":
+        score = grade_medium(state)
+    else:
+        score = grade_hard(state)
+    score = max(0.01, min(0.99, round(score, 2)))
+    return {"score": score, "level": level}
 
+@app.get("/tasks")
+def get_tasks():
+    return {
+        "tasks": [
+            {"id": "easy", "description": "Complete all tasks in easy mode"},
+            {"id": "medium", "description": "Complete tasks with priority weighting"},
+            {"id": "hard", "description": "Complete tasks respecting deadlines"}
+        ]
+    }
 def main():
     pass
 
