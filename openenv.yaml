@@ -5,15 +5,24 @@ entry_point: server.app:main
 tasks:
   - id: easy
     description: Complete all tasks in easy mode
-    grader: grader.grade_easy
+    grader:
+      function: grader.grade_easy
+      min_score: 0.0
+      max_score: 1.0
     level: easy
 
   - id: medium
-    description: Complete tasks with priority weighting in medium mode
-    grader: grader.grade_medium
+    description: Complete tasks with priority weighting
+    grader:
+      function: grader.grade_medium
+      min_score: 0.0
+      max_score: 1.0
     level: medium
 
   - id: hard
-    description: Complete tasks respecting deadlines in hard mode
-    grader: grader.grade_hard
+    description: Complete tasks respecting deadlines
+    grader:
+      function: grader.grade_hard
+      min_score: 0.0
+      max_score: 1.0
     level: hard
