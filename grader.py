@@ -35,22 +35,17 @@ def run_episode(level):
 
 
 # -----------------------------
-# GRADERS (IMPORTANT PART)
+# GRADERS
 # -----------------------------
 def grade_easy(state):
-    """
-    Easy:
-    Just complete tasks
-    """
     done_tasks = sum(t["done"] for t in state)
-    return done_tasks / len(state)
+    score = done_tasks / len(state)
+
+    # force into (0,1)
+    return max(0.01, min(0.99, score))
 
 
 def grade_medium(state):
-    """
-    Medium:
-    Completion + priority weighting
-    """
     score = 0
     total = 0
 
@@ -61,14 +56,11 @@ def grade_medium(state):
         if t["done"]:
             score += weight
 
-    return score / total if total > 0 else 0
+    final = score / total if total > 0 else 0
+    return max(0.01, min(0.99, final))
 
 
 def grade_hard(state):
-    """
-    Hard:
-    Completion + priority + deadline respect
-    """
     score = 0
     total = 0
 
@@ -76,15 +68,16 @@ def grade_hard(state):
         weight = t["priority"]
         total += weight
 
-        # only reward if done BEFORE deadline
+        # reward if done and deadline still valid
         if t["done"] and t["deadline"] >= 0:
             score += weight
 
-    return score / total if total > 0 else 0
+    final = score / total if total > 0 else 0
+    return max(0.01, min(0.99, final))
 
 
 # -----------------------------
-# MAIN EVALUATION FUNCTION
+# MAIN EVALUATION
 # -----------------------------
 def evaluate():
     results = {}
@@ -99,19 +92,15 @@ def evaluate():
         else:
             score = grade_hard(final_state)
 
-        # Must be strictly between 0 and 1 (not 0.0 or 1.0)
-        score = max(0.01, min(0.99, round(score, 2)))
-        results[level] = score
+        # round for clean output
+        results[level] = round(score, 2)
 
     return results
 
 
 # -----------------------------
-# RUN
+# RUN (IMPORTANT FORMAT)
 # -----------------------------
 if __name__ == "__main__":
     scores = evaluate()
-
-    print("Evaluation Scores:")
-    for level, score in scores.items():
-        print(f"{level}: {score}")
+    print(scores)
