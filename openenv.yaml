@@ -8,7 +8,7 @@ tasks:
     grader:
       function: grader.grade_easy
       min_score: 0.1
-      max_score: 0.9
+      max_score: 0.99
     level: easy
 
   - id: medium
@@ -16,7 +16,7 @@ tasks:
     grader:
       function: grader.grade_medium
       min_score: 0.1
-      max_score: 0.9
+      max_score: 0.99
     level: medium
 
   - id: hard
@@ -24,5 +24,5 @@ tasks:
     grader:
       function: grader.grade_hard
       min_score: 0.1
-      max_score: 0.9
+      max_score: 0.99
     level: hard
